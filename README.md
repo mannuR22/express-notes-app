@@ -93,7 +93,7 @@ Response Body
 
 *Auth-token required**
 ```http
-  POST localhost:3001/api/auth-service/logout
+  GET localhost:3001/api/auth-service/logout
 ```
 
 Response Body
