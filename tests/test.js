@@ -79,6 +79,7 @@ describe('E2E Testing', () => {
         let resp = await request(app).get(ENDPOINTS.READ_NOTE).set('Authorization', `Bearer ${authToken}`);
         expect(resp.status).toBe(200);
         expect(resp.body).toHaveProperty('notes');
+        logger.info(resp.body);
         let notes = resp.body.notes;
         expect(notes).toBeInstanceOf(Array);
         expect(notes.length).toBe(testNotes.length);
@@ -94,6 +95,7 @@ describe('E2E Testing', () => {
         let resp = await request(app).put(UPDATE_NOTE_ENDPOINT).set('Authorization', `Bearer ${authToken}`).send(testNotes[0]);
         expect(resp.status).toBe(200);
         expect(resp.body).toHaveProperty('updatedNote');
+        logger.info("ResponseBody: ", resp.body)
         expect(resp.body.updatedNote.title).toBe(testNotes[0].title);
         expect(resp.body.updatedNote.content).toBe(testNotes[0].content);
 
@@ -105,6 +107,7 @@ describe('E2E Testing', () => {
         let resp = await request(app).delete(DELETE_NOTE_ENDPOINT).set('Authorization', `Bearer ${authToken}`);
         expect(resp.status).toBe(200);
         expect(resp.body).toHaveProperty('metaInfo');
+        logger.info("Delete Response Body: ", resp.body);
         expect(resp.body.metaInfo.noteId).toBe(testNotes[2].noteId);
 
     });

@@ -15,7 +15,15 @@ const createNote = async (req, res) => {
             message: 'All fields are required'
         };
 
+    } else if (title.length > 64 || content.length > 256) {
+        logger.error("Max characters allowed for title or content exceeded.(Max characters for title is 64 and for content is 256)", req.body)
+        code = 400;
+        resBody = {
+            message: 'Max characters allowed for title or content exceeded.(Max characters for title is 64 and for content is 256)'
+        };
     } else {
+
+
         try {
 
             const note = new Note();
@@ -54,7 +62,7 @@ const readNotes = async (req, res) => {
     logger.info("Read Note API gets called.");
     const noteId = req.query.noteid || false;
     const userId = req.decoded.userId;
-    if ( noteId ) {
+    if (noteId) {
         logger.info("noteId Found, retrieving specific note with noteId: " + noteId);
         try {
             const noteDoc = await Note.findOne({ '_id': noteId, 'userId': userId });
@@ -75,20 +83,19 @@ const readNotes = async (req, res) => {
             };
         }
 
-    }else {
+    } else {
         try {
-            
 
             logger.info("noteId not Found, retrieving all notes for userId: " + userId);
-            const noteDocs = await Note.find({ 'userId': userId }, {'_id': 1, 'title': 1, });
-            
-            if(noteDocs.length == 0){
+            const noteDocs = await Note.find({ 'userId': userId }, { '_id': 1, 'title': 1, });
+
+            if (noteDocs.length == 0) {
                 logger.info("No Notes Exist in DB for user.");
                 code = 200;
                 resBody = {
                     message: "No Notes Exist for User.",
                 };
-            }else{
+            } else {
 
                 logger.info("All Notes for user retrieved successfully.");
                 code = 200;
@@ -109,7 +116,7 @@ const readNotes = async (req, res) => {
     }
     res.status(code).json(resBody);
 }
-//update Note
+
 
 const updateNote = async (req, res) => {
     logger.info("Update Note API gets called.")
@@ -125,9 +132,16 @@ const updateNote = async (req, res) => {
             message: 'Atleast one field is required.'
         };
 
+    } else if ((title && title.length > 64) || (content && content.length > 256)) {
+        logger.error("Max characters allowed for title or content exceeded.(Max characters for title is 64 and for content is 256), Request Body", req.body)
+        code = 400;
+        resBody = {
+            message: 'Max characters allowed for title or content exceeded.(Max characters for title is 64 and for content is 256)'
+        };
+
     } else {
         try {
-            
+
 
             if (noteId) {
                 let filter = { '_id': noteId, 'userId': userId }
@@ -155,7 +169,7 @@ const updateNote = async (req, res) => {
                         content: updatedDoc.content
                     },
                 };
-            }else{
+            } else {
                 code = 404;
                 resBody = {
                     message: "noteId not provided.",
@@ -184,7 +198,7 @@ const deleteNote = async (req, res) => {
     try {
         const filter = { '_id': noteId, 'userId': userId }
         const noteDocs = await Note.find(filter);
-        if(noteDocs.length == 0){
+        if (noteDocs.length == 0) {
             code = 409;
             resBody = {
                 message: "no document Exists with noteId and userId combo."
