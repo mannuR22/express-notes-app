@@ -65,15 +65,26 @@ const readNotes = async (req, res) => {
     if (noteId) {
         logger.info("noteId Found, retrieving specific note with noteId: " + noteId);
         try {
-            const noteDoc = await Note.findOne({ '_id': noteId, 'userId': userId });
-            code = 200;
-            resBody = {
-                title: noteDoc.title,
-                content: noteDoc.content,
-                lastUpdatedOn: noteDoc.lastUpdatedAt,
-                createdAt: noteDoc.createdAt
+            const noteDocs = await Note.find({ '_id': noteId, 'userId': userId });
+
+            if(noteDocs.length == 0){
+                logger.info("no Document Exist or got deleted for noteId: " + noteId);
+                code = 409;
+                resBody = {
+                    message: "no Document Exist or got deleted for noteId: " + noteId,
+                };
+            }else{
+                let [noteDoc] = noteDocs
+                code = 200;
+                resBody = {
+                    title: noteDoc.title,
+                    content: noteDoc.content,
+                    lastUpdatedOn: noteDoc.lastUpdatedAt,
+                    createdAt: noteDoc.createdAt
+                }
+                logger.info("Successfully, retrieved specific note from DB.");
             }
-            logger.info("Successfully, retrieved specific note from DB.");
+            
         } catch (e) {
             logger.error(e.message);
             code = 500;

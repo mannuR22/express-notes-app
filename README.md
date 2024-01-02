@@ -225,9 +225,6 @@ Response Body
 
 
 
-
-
-
 ## Author
 
 - [@mannuR22](https://www.github.com/mannuR22)
